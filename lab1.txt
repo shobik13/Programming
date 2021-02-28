@@ -1,0 +1,166 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+float* MemoryArray(int);
+void OutputArray(int, float*);
+void One(int&, float*&);
+void Two(int&, float*&);
+void Three(int&, float*&);
+void Four(int&, float*&);
+
+int main()
+{
+	setlocale(LC_ALL, "Rus");
+
+	int count, tip, №;
+
+	cout << "Выберите тип массива (1 - отсортированный, 2 - не отсортированный): ";
+
+	do {
+		cin >> tip;
+		if (tip < 0 || tip>2) cout << "\nОшибка: Введён неверный тип\n\nВыберите тип массива (1 - отсортированный, 2 - не отсортированный): ";
+	} while (tip < 0 || tip>2);
+
+	cout << "\nЗадайте размерность массива: "; cin >> count; cout << endl;
+	float* arr = MemoryArray(count);
+
+	if (tip == 1)
+	{
+		for (int i = 0; i < count; i++)
+		{
+			arr[i] = i;
+		}
+	}
+	if (tip == 2)
+	{
+		for (int i = 0; i < count; i++)
+		{
+			arr[i] = rand() % count;
+		}
+	}
+	OutputArray(count, arr);
+
+	do {
+		cout << "\n\nВыберите номер задания: \n1 - Добавить элемент на k - ую позицию в массиве\n2 - Удалить k - ый элемент массива\n3 - Добавить элемент массива после встреченного элемента с заданным значением";
+		cout << "\n4 - Удалить все элементы массива с заданным значением \n0 - Выход \n\nЗадание: "; cin >> №; cout << "\n";
+
+		if (№ == 1) One(count, arr);
+		if (№ == 2) Two(count, arr);
+		if (№ == 3) Three(count, arr);
+		if (№ == 4) Four(count, arr);
+
+		cout << "\n";
+		OutputArray(count, arr);
+	} while (№ != 0);
+}
+
+float* MemoryArray(int count)
+{
+	float* arr = new float[count];
+	return arr;
+}
+void OutputArray(int count, float* arr)
+{
+	for (int i = 0; i < count; i++)
+	{
+		cout << arr[i] << " ";
+	}
+}
+void One(int& count, float*& arr)
+{
+	int index; float number;
+	cout << "Задайте число: "; cin >> number;
+	do {
+		cout << "\nЗадайте позицию(индекс): "; cin >> index;
+		if (index < 0 || index > count) cout << "\nДанное место недоступно, попробуйте ещё раз \n\n";
+	} while (index < 0 || index > count);
+	count = count + 1;
+	float* buff = new float[count];
+	for (int i = 0; i < index; i++)
+	{
+		buff[i] = arr[i];
+	}
+	buff[index] = number;
+	for (int i = index + 1; i < count; i++)
+	{
+		buff[i] = arr[i - 1];
+	}
+	delete[] arr;
+	arr = buff;
+}
+void Two(int& count, float*& arr)
+{
+	int index;
+	do {
+		cout << "Выбирите место(индекс), с которого нужно удалить элемент: "; cin >> index;
+		if (index < 0 || index > count) cout << "Вы выбрали несуществующее место.\n\n";
+	} while (index < 0 || index > count);
+	float* buff = new float[count - 1];
+	for (int i = 0; i < index; i++)
+	{
+		buff[i] = arr[i];
+	}
+	for (int i = index; i < count; i++)
+	{
+		buff[i] = arr[i + 1];
+	}
+	delete[] arr;
+	arr = buff;
+	count -= 1;
+}
+void Three(int& count, float*& arr)
+{
+	int element; float number; int z = 0, index;
+	cout << "Задайте число, которое нужно добавить в массив: "; cin >> number;
+	cout << "\nЗадайте элемент, после которого нужно подставить число: "; cin >> element;
+	for (int i = 0; i < count && z == 0; i++)
+	{
+		if (arr[i] == element) { z = 1; index = i; }
+	}
+	if (z == 0) cout << "\nЭлементы не найдены\n";
+	else
+	{
+		float* buff = new float[count + 1];
+		for (int i = 0; i <= index; i++)
+		{
+			buff[i] = arr[i];
+		}
+		index++;
+		buff[index] = number;
+		for (int i = index; i < count; i++)
+		{
+			buff[i + 1] = arr[i];
+		}
+		delete[] arr;
+		arr = buff;
+		count = count + 1;
+	}
+}
+void Four(int& count, float*& arr)
+{
+	float element; int z = 0;
+	cout << "Задайте элемент, который нужно удалить: "; cin >> element;
+	for (int i = 0; i < count; i++)
+	{
+		if (arr[i] == element) z++;
+	}
+	if (z == 0) cout << "\nЭлементы не найдены\n";
+	else
+	{
+		float* buff = new float[count - z];
+		z = 0;
+		for (int i = 0; i < count; i++)
+		{
+			if (arr[i] == element)
+			{
+				z++;
+			}
+			else buff[i - z] = arr[i];
+		}
+		delete[] arr;
+		arr = buff;
+		count = count - z;
+	}
+}
